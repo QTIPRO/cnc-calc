@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Калькулятор стоимости ЧПУ | Расчёт деталей</title>
+    <meta name="theme-color" content="#0b1020" />
+    <link rel="stylesheet" href="assets/styles.css" />
+  </head>
+  <body>
+    <header class="container">
+      <h1>Калькулятор стоимости изготовления деталей на ЧПУ</h1>
+      <p class="subtitle">Оффлайн-приложение. Данные автоматически сохраняются на этом компьютере.</p>
+    </header>
+
+    <main class="container grid">
+      <section class="card">
+        <h2>Быстрый калькулятор (по геометрии)</h2>
+        <div class="row">
+          <label for="qcMode">Тип обработки</label>
+          <select id="qcMode">
+            <option value="turning">Токарная</option>
+            <option value="milling">Фрезерная</option>
+          </select>
+        </div>
+        <div class="row" id="qcMatRow">
+          <label for="qcMat">Материал</label>
+          <select id="qcMat">
+            <option value="steel">Сталь</option>
+            <option value="aluminum">Алюминий</option>
+            <option value="titanium">Титан</option>
+            <option value="brass">Латунь</option>
+            <option value="bronze">Бронза</option>
+            <option value="stainless">Нержавейка</option>
+          </select>
+        </div>
+        <div class="row">
+          <label for="qcRate">Ставка станка, за час</label>
+          <input id="qcRate" type="number" min="0" step="1" value="1200"/>
+        </div>
+        <div class="row">
+          <label for="qcMachineType">Тип станка (пресет)</label>
+          <select id="qcMachineType">
+            <option value="latheCNC">Токарный ЧПУ</option>
+            <option value="mill3axis">Фрезер 3-осевой</option>
+            <option value="mill5axis">Фрезер 5-осевой</option>
+          </select>
+        </div>
+        <div class="row">
+          <label for="qcAutoMass">Автоматически рассчитывать массу</label>
+          <input id="qcAutoMass" type="checkbox" />
+        </div>
+        <div class="actions">
+          <div id="qcResult" class="qcResult"></div>
+        </div>
+        <div id="qcTurning" class="qc">
+          <div class="row"><label for="qcPartType">Тип детали</label>
+            <select id="qcPartType">
+              <option value="rod">Пруток</option>
+              <option value="flange">Фланец</option>
+              <option value="pipe">Труба</option>
+            </select>
+          </div>
+          <div class="row"><label for="qcLen">Длина, мм</label><input id="qcLen" type="number" min="0" step="1" value="100"/></div>
+          <div class="row"><label for="qcDia">Диаметр, мм</label><input id="qcDia" type="number" min="0" step="1" value="50"/></div>
+          <div class="row"><label for="qcThk">Толщина (для фланца/трубы), мм</label><input id="qcThk" type="number" min="0" step="1" value="10"/></div>
+
+          <h3 class="sub">Деталировка точения</h3>
+          <div class="row"><label for="qcODAll">Точить общий диаметр</label><input id="qcODAll" type="checkbox" /></div>
+          <div class="row"><label>Точить наружный диаметр 1 — D, L, N</label>
+            <div>
+              <input id="qcOD1D" type="number" min="0" step="1" placeholder="D, мм"/>
+              <input id="qcOD1L" type="number" min="0" step="1" placeholder="L, мм"/>
+              <input id="qcOD1N" type="number" min="0" step="1" placeholder="Кол-во"/>
+            </div>
+          </div>
+          <div class="row"><label>Точить наружный диаметр 2 — D, L, N</label>
+            <div>
+              <input id="qcOD2D" type="number" min="0" step="1" placeholder="D, мм"/>
+              <input id="qcOD2L" type="number" min="0" step="1" placeholder="L, мм"/>
+              <input id="qcOD2N" type="number" min="0" step="1" placeholder="Кол-во"/>
+            </div>
+          </div>
+          <div class="row"><label>Точить наружный диаметр 3 — D, L, N</label>
+            <div>
+              <input id="qcOD3D" type="number" min="0" step="1" placeholder="D, мм"/>
+              <input id="qcOD3L" type="number" min="0" step="1" placeholder="L, мм"/>
+              <input id="qcOD3N" type="number" min="0" step="1" placeholder="Кол-во"/>
+            </div>
+          </div>
+          <div class="row"><label>Точить внутренний диаметр — D, L, N</label>
+            <div>
+              <input id="qcIDD" type="number" min="0" step="1" placeholder="D, мм"/>
+              <input id="qcIDL" type="number" min="0" step="1" placeholder="L, мм"/>
+              <input id="qcIDN" type="number" min="0" step="1" placeholder="Кол-во"/>
+            </div>
+          </div>
+
+          <h3 class="sub">Операции</h3>
+          <div class="row"><label for="qcLOd">Точение наружное, сумм. длина, мм</label><input id="qcLOd" type="number" min="0" step="1" value="100"/></div>
+          <div class="row"><label for="qcLId">Точение внутреннее, сумм. длина, мм</label><input id="qcLId" type="number" min="0" step="1" value="0"/></div>
+          <div class="row"><label for="qcThreadIn">Резьба внутренняя, шт</label><input id="qcThreadIn" type="number" min="0" step="1" value="0"/></div>
+          <div class="row"><label for="qcThreadOutSmall">Резьба наружная до М20, шт</label><input id="qcThreadOutSmall" type="number" min="0" step="1" value="0"/></div>
+          <div class="row"><label for="qcThreadOutBig">Резьба наружная свыше М20, шт</label><input id="qcThreadOutBig" type="number" min="0" step="1" value="0"/></div>
+          <div class="row"><label for="qcDrill">Сверление, шт</label><input id="qcDrill" type="number" min="0" step="1" value="0"/></div>
+          <div class="row"><label for="qcKeyway">Шпоночный паз, шт</label><input id="qcKeyway" type="number" min="0" step="1" value="0"/></div>
+          <div class="row"><label for="qcFits">Точные посадки, шт</label><input id="qcFits" type="number" min="0" step="1" value="0"/></div>
+          <div class="row"><label for="qcTaperIn">Конус внутр., шт</label><input id="qcTaperIn" type="number" min="0" step="1" value="0"/></div>
+          <div class="row"><label for="qcTaperOut">Конус наруж., шт</label><input id="qcTaperOut" type="number" min="0" step="1" value="0"/></div>
+          <div class="row"><label for="qcSphere">Сфера, шт</label><input id="qcSphere" type="number" min="0" step="1" value="0"/></div>
+          <div class="row"><label for="qcKnurl">Накатка, шт</label><input id="qcKnurl" type="number" min="0" step="1" value="0"/></div>
+          <div class="row"><label for="qcIT">Квалитет</label>
+            <select id="qcIT"><option>14</option><option>12</option><option>10</option><option>8</option><option>6</option></select>
+          </div>
+          <div class="row"><label for="qcRa">Ra</label>
+            <select id="qcRa"><option>12.5</option><option>6.3</option><option selected>3.2</option><option>1.6</option><option>0.8</option></select>
+          </div>
+          <div class="row"><label for="qcQty">Количество (QC), шт</label><input id="qcQty" type="number" min="1" step="1" value="1"/></div>
+
+          <div class="actions">
+            <button id="qcCalcBtn" class="btn secondary">Рассчитать</button>
+            <button id="qcApplyBtn" class="btn">Добавить как операцию</button>
+          </div>
+        </div>
+        <div id="qcMilling" class="qc" style="display:none;">
+          <div class="row"><label for="qcX">Длина X, мм</label><input id="qcX" type="number" min="0" step="1" value="100"/></div>
+          <div class="row"><label for="qcY">Ширина Y, мм</label><input id="qcY" type="number" min="0" step="1" value="60"/></div>
+          <div class="row"><label for="qcZ">Высота Z, мм</label><input id="qcZ" type="number" min="0" step="1" value="20"/></div>
+
+          <h3 class="sub">Операции</h3>
+          <div class="row"><label for="qcFaces">Обработка плоскостей, шт</label><input id="qcFaces" type="number" min="0" step="1" value="2"/></div>
+          <div class="row"><label for="qcPockets">Карманы, шт</label><input id="qcPockets" type="number" min="0" step="1" value="0"/></div>
+          <div class="row"><label for="qcHoles">Отверстия, шт</label><input id="qcHoles" type="number" min="0" step="1" value="0"/></div>
+          <div class="row"><label for="qcThreads">Резьбы, шт</label><input id="qcThreads" type="number" min="0" step="1" value="0"/></div>
+          <div class="row"><label for="qcPerimeter">Контур, сумм. длина, мм</label><input id="qcPerimeter" type="number" min="0" step="1" value="0"/></div>
+
+          <div class="row"><label for="qcIT_m">Квалитет</label>
+            <select id="qcIT_m"><option>14</option><option>12</option><option>10</option><option>8</option><option>6</option></select>
+          </div>
+          <div class="row"><label for="qcRa_m">Ra</label>
+            <select id="qcRa_m"><option>12.5</option><option>6.3</option><option selected>3.2</option><option>1.6</option><option>0.8</option></select>
+          </div>
+          <div class="actions">
+            <button id="qcCalcBtn_m" class="btn secondary">Рассчитать</button>
+            <button id="qcApplyBtn_m" class="btn">Добавить как операцию</button>
+          </div>
+        </div>
+      </section>
+      <section class="card">
+        <h2>Параметры партии</h2>
+        <div class="row">
+          <label for="quantity">Количество, шт</label>
+          <input id="quantity" type="number" min="1" step="1" value="1" />
+        </div>
+        <div class="row">
+          <label for="currency">Валюта (символ)</label>
+          <input id="currency" type="text" maxlength="6" value="₽" />
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Материал</h2>
+        <div class="row">
+          <label for="material">Материал (пресет)</label>
+          <select id="material"></select>
+        </div>
+        <div class="row">
+          <label for="materialPrice">Цена материала, за кг</label>
+          <input id="materialPrice" type="number" min="0" step="0.01" />
+        </div>
+        <div class="row">
+          <label for="partWeight">Масса детали, кг (чистая)</label>
+          <input id="partWeight" type="number" min="0" step="0.001" />
+        </div>
+        <div class="row">
+          <label for="scrapRate">Запас/отход материала, %</label>
+          <input id="scrapRate" type="number" min="0" max="100" step="0.1" value="5" />
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Операции</h2>
+        <div id="operationsList" class="ops"></div>
+        <div class="actions">
+          <button id="addOpBtn" class="btn">Добавить операцию</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Сменные ставки</h2>
+        <div class="row">
+          <label for="shiftDayMult">День (множитель к ставке)</label>
+          <input id="shiftDayMult" type="number" min="0" step="0.01" value="1" />
+        </div>
+        <div class="row">
+          <label for="shiftNightMult">Ночь (множитель к ставке)</label>
+          <input id="shiftNightMult" type="number" min="0" step="0.01" value="1.15" />
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Доп. затраты</h2>
+        <div class="row">
+          <label for="toolingPerPart">Инструмент/оснастка, за деталь</label>
+          <input id="toolingPerPart" type="number" min="0" step="0.01" value="0" />
+        </div>
+        <div class="row">
+          <label for="toolingPerBatch">Оснастка единовременная, на партию</label>
+          <input id="toolingPerBatch" type="number" min="0" step="0.01" value="0" />
+        </div>
+        <div class="row">
+          <label for="postProcessPerPart">Пост-обработка, за деталь</label>
+          <input id="postProcessPerPart" type="number" min="0" step="0.01" value="0" />
+        </div>
+        <div class="row">
+          <label for="shippingPerBatch">Доставка/упаковка, на партию</label>
+          <input id="shippingPerBatch" type="number" min="0" step="0.01" value="0" />
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Наценки и налоги</h2>
+        <div class="row">
+          <label for="overheadPct">Накладные расходы, %</label>
+          <input id="overheadPct" type="number" min="0" max="100" step="0.1" value="15" />
+        </div>
+        <div class="row">
+          <label for="marginPct">Маржинальность (прибыль), %</label>
+          <input id="marginPct" type="number" min="0" max="100" step="0.1" value="20" />
+        </div>
+        <div class="row">
+          <label for="vatPct">НДС, %</label>
+          <input id="vatPct" type="number" min="0" max="100" step="0.1" value="0" />
+        </div>
+      </section>
+
+      <section class="card results">
+        <h2>Итоги</h2>
+        <div id="breakdown" class="breakdown"></div>
+        <div class="totals">
+          <div><span>Итого за партию:</span><strong id="totalBatch">—</strong></div>
+          <div><span>Цена за деталь:</span><strong id="unitPrice">—</strong></div>
+        </div>
+        <div class="actions">
+          <button id="resetBtn" class="btn secondary">Сброс</button>
+          <button id="exportBtn" class="btn">Экспорт настроек</button>
+          <button id="csvBtn" class="btn secondary">Excel (CSV)</button>
+          <button id="printBtn" class="btn">Печать КП (PDF)</button>
+          <label class="fileLabel btn secondary">
+            Импорт настроек
+            <input id="importInput" type="file" accept="application/json" hidden />
+          </label>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Пресеты</h2>
+        <div class="row">
+          <label for="presetName">Название пресета</label>
+          <input id="presetName" type="text" placeholder="Например: Деталь Алюминий" />
+        </div>
+        <div class="row">
+          <label for="presetSelect">Сохраненные пресеты</label>
+          <select id="presetSelect"></select>
+        </div>
+        <div class="actions">
+          <button id="savePresetBtn" class="btn">Сохранить пресет</button>
+          <button id="loadPresetBtn" class="btn secondary">Загрузить</button>
+          <button id="deletePresetBtn" class="btn secondary">Удалить</button>
+        </div>
+      </section>
+    </main>
+
+    <footer class="container muted">
+      <small>Калькулятор работает локально в браузере. Версия 1.0.</small>
+    </footer>
+
+    <script src="assets/app.js"></script>
+  </body>
+  </html>
+
+
